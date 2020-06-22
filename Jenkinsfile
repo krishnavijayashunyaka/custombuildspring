@@ -22,6 +22,7 @@ pipeline {
         container('maven') {
           sh "mvn versions:set -DnewVersion=$PREVIEW_VERSION"
           sh "mvn install"
+          sh "mvn sonar:sonar -Dsonar.host.url=http://18.210.22.128:9000 -Dsonar.login=b10eff7e52549ebc35913e637475b411d186d469"
           sh "skaffold version"
           sh "export VERSION=$PREVIEW_VERSION && skaffold build -f skaffold.yaml"
           sh "jx step post build --image $DOCKER_REGISTRY/$ORG/$APP_NAME:$PREVIEW_VERSION"
@@ -43,7 +44,7 @@ pipeline {
           sh "git checkout master"
           sh "git config --global credential.helper store"
           sh "jx step git credentials"
-
+          sh "mvn sonar:sonar -Dsonar.host.url=http://18.210.22.128:9000 -Dsonar.login=b10eff7e52549ebc35913e637475b411d186d469"
           // so we can retrieve the version in later steps
           sh "echo \$(jx-release-version) > VERSION"
           sh "mvn versions:set -DnewVersion=\$(cat VERSION)"
